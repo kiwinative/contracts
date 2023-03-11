@@ -1,13 +1,7 @@
 import Token as Token
 
-
-struct Bet:
-    player1: address
-    player2: address
-    amount: uint256
-    player1Won: bool
-    betTime: uint256
-    resolveTime: uint256
+struct BettingEvent:
+    
 
 # State Variables
 kiwiToken: public(Token)
@@ -15,20 +9,7 @@ bets: public(HashMap[uint256, Bet])
 betCount: public(uint256)
 
 # Events
-event BetPlaced:
-    betId: uint256
-    player1: indexed(address)
-    player2: indexed(address)
-    amount: uint256
-    betTime: uint256
 
-event BetResolved:
-    betId: uint256
-    player1: indexed(address)
-    player2: indexed(address)
-    amount: uint256
-    player1Won: bool
-    resolveTime: uint256
 
 
 
@@ -54,6 +35,7 @@ def placeBet(player2: address, amount: uint256):
             betTime: block.timestamp,
             resolveTime: 0
         })
+
         self.betCount += 1
         log BetPlaced(self.betCount-1, msg.sender, player2, amount, block.timestamp)
 

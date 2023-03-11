@@ -69,8 +69,8 @@ def __init__(_txfee: uint256, _burnfee: uint256, _feeAddress: address):
     """
 
     self.owner = msg.sender
-    self.totalSupply = 100000000000000000000
-    self.balanceOf[msg.sender] = 100000000000000000000
+    self.totalSupply = 100000000000000000000 * 10 ** 19
+    self.balanceOf[msg.sender] = 100000000000000000000 * 10 ** 19
     self.txfee = _txfee
     self.burnfee = _burnfee
     self.feeAddress = _feeAddress
@@ -85,7 +85,7 @@ def __init__(_txfee: uint256, _burnfee: uint256, _feeAddress: address):
         )
     )
 
-    log Transfer(empty(address), msg.sender, 100000000000000000000)
+    log Transfer(empty(address), msg.sender, self.totalSupply)
 
 
 @pure
@@ -187,13 +187,13 @@ def _decay(_address: address, _value: uint256) -> uint256:
     tempValue: uint256 = _value
     newValue: uint256 = _value
     if self.txfee > 0 and _address != self.feeAddress:
-        deflationaryDecay: uint256 = tempValue / (10000 / self.txfee)
+        deflationaryDecay: uint256 = tempValue / (1000 / self.txfee)
         self.balanceOf[self.feeAddress] += deflationaryDecay
         log Transfer(_address, self.feeAddress, deflationaryDecay)
         newValue -= deflationaryDecay
 
     if self.burnfee > 0 and _address != self.feeAddress:
-        burnValue: uint256 = tempValue / (10000 / self.burnfee)
+        burnValue: uint256 = tempValue / (1000 / self.burnfee)
         self.totalSupply -= self.totalSupply
         log Transfer(_address, empty(address), burnValue)
         newValue -= burnValue
