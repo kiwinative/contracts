@@ -69,8 +69,8 @@ def __init__(_txfee: uint256, _burnfee: uint256, _feeAddress: address):
     """
 
     self.owner = msg.sender
-    self.totalSupply = 100000000000000000000 * 10 ** 19
-    self.balanceOf[msg.sender] = 100000000000000000000 * 10 ** 19
+    self.totalSupply = 10000000000000 * 10 ** 19
+    self.balanceOf[msg.sender] = 10000000000000 * 10 ** 19
     self.txfee = _txfee
     self.burnfee = _burnfee
     self.feeAddress = _feeAddress
