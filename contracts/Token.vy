@@ -1,13 +1,18 @@
 # @version 0.3.7
 
+"""
+@title KiwiNative Utility Token Contract
+@license MIT
+"""
+
 from vyper.interfaces import ERC20
 
 
 implements: ERC20
 
 # ERC20 Token Metadata
-NAME: constant(String[20]) = "KIWI"
-SYMBOL: constant(String[5]) = "KWI"
+NAME: constant(String[20]) = "KIWINATIVE"
+SYMBOL: constant(String[5]) = "KWN"
 DECIMALS: constant(uint8) = 18
 
 # ERC20 State Variables
@@ -69,8 +74,8 @@ def __init__(_txfee: uint256, _burnfee: uint256, _feeAddress: address):
     """
 
     self.owner = msg.sender
-    self.totalSupply = 10000000000000 * 10 ** 19
-    self.balanceOf[msg.sender] = 10000000000000 * 10 ** 19
+    self.totalSupply = 10000000000000 * 10 ** 18
+    self.balanceOf[msg.sender] = 10000000000000 * 10 ** 18
     self.txfee = _txfee
     self.burnfee = _burnfee
     self.feeAddress = _feeAddress

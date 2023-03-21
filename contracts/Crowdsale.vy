@@ -4,10 +4,10 @@ import Token as Token
 
 # Crowdsale stae variables
 
-kiwiToken: public(Token)    # $KIWI
+kiwinativeToken: public(Token)    # $KIWINATIVE
 wallet: public(address)     # Address where the funds are collected
-rate: public(uint256)       # How many token units a buyer gets per GWei (10-9 or 0.000000001 BNB)
-gweiRaised: public(uint256)
+rate: public(uint256)       # How many token units a buyer gets per Wei (10-18 or 0.000000000000000001 BNB)
+weiRaised: public(uint256)
 
 # Events
 event TokenPurchase:
@@ -16,60 +16,79 @@ event TokenPurchase:
     value: uint256
     amount: uint256
 
+event UpdateRate:
+    rate: uint256
+
 owner: public(address)
 
 
 @external
-def __init__(_kiwiTokenAddress: address, _wallet: address, _rate: uint256):
+def __init__(_kiwinativeTokenAddress: address, _wallet: address, _rate: uint256):
     """
     @notice Constructor, runs at contracts deployment.
-    @param _kiwiTokenAddress KIWI token address
+    @param _kiwinativeTokenAddress KWN token address
     @param _wallet The address where collected funds will be forwarded to
-    @param _rate The number of KIWI a buyer gets per gwei
+    @param _rate The number of KWN a buyer gets per wei
     """
 
     assert _rate > 0
     assert _wallet != empty(address)
-    assert _kiwiTokenAddress != empty(address)
+    assert _kiwinativeTokenAddress != empty(address)
 
     self.owner = msg.sender
-    self.kiwiToken = Token(_kiwiTokenAddress)
+    self.kiwinativeToken = Token(_kiwinativeTokenAddress)
     self.wallet = _wallet
     self.rate = _rate
 
 
+@external
+def updateRate(_rate: uint256) -> bool:
+    """
+    @notice Function to update rate
+    @param _rate The new rate per wei.
+    @return A boolean that indicates if the operation was successful.
+    """
+
+    assert msg.sender == self.owner, "Access is denied."
+    self.rate = _rate
+
+    log UpdateRate(_rate)
+
+    return True
+
+
 @view
 @internal
-def _getTokenAmount(_gweiAmount: uint256) -> uint256:
+def _getTokenAmount(_weiAmount: uint256) -> uint256:
     """
-    @notice Function to converts BNB(Gwei) to tokens
-    @param _gweiAmount amount of gwei to be converted
-    @return Number of kiwi tokens that can be purchase wit the speciified amount of _gweiAmount.
+    @notice Function to converts BNB(wei) to tokens
+    @param _weiAmount amount of wei to be converted
+    @return Number of kiwinative tokens that can be purchase wit the speciified amount of _weiAmount.
     """
 
-    return _gweiAmount * self.rate
+    return _weiAmount * self.rate
 
 
 @internal
-def _buyTokens(_beneficiary: address, _gweiAmount: uint256) -> bool:
+def _buyTokens(_beneficiary: address, _weiAmount: uint256) -> bool:
     """
-    @notice Internal function to buy KIWI token
+    @notice Internal function to buy KIWINATIVE token
     @param _beneficiary address to foward token to.
     @return True, on transaction successfull.
     """
 
     assert _beneficiary != empty(address)
-    assert _gweiAmount > 0
+    assert _weiAmount > 0
 
-    kiwi: uint256 = self._getTokenAmount(_gweiAmount)
+    kiwinative: uint256 = self._getTokenAmount(_weiAmount)
 
-    self.gweiRaised += _gweiAmount
+    self.weiRaised += _weiAmount
 
-    assert self.kiwiToken.transferFrom(self.kiwiToken.owner(), _beneficiary, kiwi)
+    assert self.kiwinativeToken.transferFrom(self.kiwinativeToken.owner(), _beneficiary, kiwinative)
 
-    log TokenPurchase(msg.sender, _beneficiary, _gweiAmount, kiwi)
+    log TokenPurchase(msg.sender, _beneficiary, _weiAmount, kiwinative)
 
-    send(self.wallet, _gweiAmount)
+    send(self.wallet, _weiAmount)
     return True
 
 
@@ -77,7 +96,7 @@ def _buyTokens(_beneficiary: address, _gweiAmount: uint256) -> bool:
 @payable
 def buyTokens(_beneficiary: address) -> bool:
     """
-    @notice Function to buy KIWI token
+    @notice Function to buy KIWINATIVE token
     @param _beneficiary address to foward token to.
     @return True, on transaction successfull.
     """
@@ -92,3 +111,14 @@ def __default__():
     """
     # print(self.owner)
     self._buyTokens(msg.sender, msg.value)
+
+
+@external
+def destroy() -> bool:
+    """
+    @notice Function to destroy contract
+    @return A boolean that indicates if the operation was successful.
+    """
+
+    assert msg.sender == self.owner, "Access is denied."
+    selfdestruct(msg.sender)

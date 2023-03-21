@@ -12,8 +12,8 @@ def test_initial_state(token, owner):
     """
     # Check the token meta matches the deployment
     # token.method_name() has access to all the methods in the smart contract.
-    assert token.name() == "KIWI"
-    assert token.symbol() == "KWI"
+    assert token.name() == "KIWINATIVE"
+    assert token.symbol() == "KWN"
     assert token.decimals() == 18
 
     # Check of intial state of authorization
@@ -21,8 +21,8 @@ def test_initial_state(token, owner):
     assert token.isPaused() == False
 
     # Check intial balance of tokens
-    assert token.totalSupply() == 1000000
-    assert token.balanceOf(owner) == 1000000
+    assert token.totalSupply() == 10000000000000 * 10 ** 18
+    assert token.balanceOf(owner) == 10000000000000 * 10 ** 18
 
 
 def test_pause(token, owner, accounts):
@@ -42,7 +42,7 @@ def test_pause(token, owner, accounts):
         token.approve(spender, 300, sender=owner)
         token.transferFrom(owner, receiver, 300, sender=spender)
     
-    assert token.balanceOf(owner) == 1000000
+    assert token.balanceOf(owner) == 10000000000000 * 10 ** 18
     
     
 def test_unpause(token, owner, accounts):
@@ -64,7 +64,7 @@ def test_unpause(token, owner, accounts):
     token.approve(spender, 300, sender=owner)
     token.transferFrom(owner, receiver, 300, sender=spender)
     
-    assert token.balanceOf(owner) == 999600   
+    assert token.balanceOf(owner) == 10000000000000 * 10 ** 18 - 400 
         
 
 def test_transfer(token, owner, receiver, feeaddress):
@@ -74,7 +74,7 @@ def test_transfer(token, owner, receiver, feeaddress):
     Should throw an error of balance if sender does not have enough funds.
     """
     owner_balance = token.balanceOf(owner)
-    assert owner_balance == 1000000
+    assert owner_balance == 10000000000000 * 10 ** 18
 
     receiver_balance = token.balanceOf(receiver)
     assert receiver_balance == 0
@@ -100,7 +100,7 @@ def test_transfer(token, owner, receiver, feeaddress):
     assert receiver_balance == 100
 
     owner_balance = token.balanceOf(owner)
-    assert owner_balance == 1000000 - 100 
+    assert owner_balance == 10000000000000 * 10 ** 18 - 100 
 
     # Expected insufficient funds failure
     # ape.reverts: Reverts the current call using a given snapshot ID.
@@ -123,7 +123,7 @@ def test_transfer_from(token, owner, accounts):
     receiver, feeaddress, spender = accounts[1:4]
 
     owner_balance = token.balanceOf(owner)
-    assert owner_balance == 1000000
+    assert owner_balance == 10000000000000 * 10 ** 18
 
     receiver_balance = token.balanceOf(receiver)
     assert receiver_balance == 0
@@ -167,7 +167,7 @@ def test_transfer_from(token, owner, accounts):
     token.transferFrom(owner, receiver, 100, sender=spender)
     assert token.balanceOf(spender) == 0
     assert token.balanceOf(receiver) == 300
-    assert token.balanceOf(owner) == 1000000 - 300
+    assert token.balanceOf(owner) == 10000000000000 * 10 ** 18 - 300
 
 
 def test_approve(token, owner, receiver):
@@ -206,7 +206,7 @@ def test_mint(token, owner, receiver):
     Create an approved amount of tokens.
     """
     totalSupply = token.totalSupply()
-    assert totalSupply == 1000000
+    assert totalSupply == 10000000000000 * 10 ** 18
 
     receiver_balance = token.balanceOf(receiver)
     assert receiver_balance == 0
@@ -223,7 +223,7 @@ def test_mint(token, owner, receiver):
     assert receiver_balance == 420
 
     totalSupply = token.totalSupply()
-    assert totalSupply == 1000420
+    assert totalSupply == 10000000000000 * 10 ** 18 +420
 
 
 def test_add_minter(token, owner, accounts):
@@ -254,10 +254,10 @@ def test_burn(token, owner):
     Burn/Send amount of tokens to ZERO Address.
     """
     totalSupply = token.totalSupply()
-    assert totalSupply == 1000000
+    assert totalSupply == 10000000000000 * 10 ** 18
 
     owner_balance = token.balanceOf(owner)
-    assert owner_balance == 1000000
+    assert owner_balance == 10000000000000 * 10 ** 18
 
     tx = token.burn(420, sender=owner)
 
@@ -268,10 +268,10 @@ def test_burn(token, owner):
     assert logs[0].amount == 420
 
     owner_balance = token.balanceOf(owner)
-    assert owner_balance == 999580
+    assert owner_balance == 10000000000000 * 10 ** 18 -420
 
     totalSupply = token.totalSupply()
-    assert totalSupply == 999580
+    assert totalSupply == 10000000000000 * 10 ** 18 - 420
 
 
 def test_permit(chain, token, owner, receiver, Permit):
